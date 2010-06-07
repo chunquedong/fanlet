@@ -7,12 +7,12 @@ using [java] fanx.interop
 
 class ServletRes : WebRes
 {
-  HttpServletResponse? res
+  HttpServletResponse res
   override readonly Bool isCommitted := false
   internal WebOutStream? webOut
 
-  new make(HttpServletResponse? response) {
-      res = response
+  new make(HttpServletResponse response) {
+    res = response
   }
   
   override readonly Bool isDone := false
@@ -70,14 +70,13 @@ class ServletRes : WebRes
 
     // if we have content then we need to ensure we have our
     // headers and response stream are setup correctly
-    if (content) {
+    if (content)
       webOut = WebOutStream(Interop.toFan(res.getOutputStream()))
-    }
 
     // write response line and headers
     res.setStatus(this.statusCode)
     this.headers.each |Str v, Str k| {
-      res.addHeader(v, k)
+      res.addHeader(k, v)
     }
     this.cookies.each |c| {
       jc := JCookie(c.name, c.val)
@@ -89,11 +88,11 @@ class ServletRes : WebRes
   }
   
   override Str:Str headers := Str:Str[:] {
-    get { checkUncommitted; return &headers }
+    get { return (isCommitted ? &headers.ro : &headers) }
   }
   
   override web::Cookie[] cookies := web::Cookie[,] {
-    get { checkUncommitted; return &cookies }
+    get { return (isCommitted ? &cookies.ro : &cookies) }
   }
 }
 
