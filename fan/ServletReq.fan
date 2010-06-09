@@ -23,7 +23,6 @@ internal class ServletReq : WebReq
   override Version version := Version("0")
   override Str method() { return req.getMethod() }
   override Uri uri() { return Uri.fromStr(req.getRequestURI()) }
-  ** not sure how to deal with sessions yet...
   override once WebSession session() { return ServletSession(req.getSession()) }
   
   override once Str:Str headers() {

@@ -4,14 +4,12 @@ package fan.servlet;
 import java.io.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import java.util.logging.Logger;
 import fan.sys.*;
 import fanx.interop.*;
 
 public class FanServlet extends HttpServlet
 {
   private FanObj webmod;
-  private static final Logger log = Logger.getLogger(FanServlet.class.getName());
   
   public static FanObj loadAndCreateType(String fanTypeName, Object... values)
   {
@@ -53,7 +51,10 @@ public class FanServlet extends HttpServlet
       webmod.typeof().method("onService").call(webmod);
     }
     finally {
-      // cleanup thread locals
+      // save the session, and cleanup thread locals
+      FanObj session = (FanObj) webreq.typeof().method("session").call(webreq);
+      session.typeof().method("save").call(session);
+      
       locals.remove("web.req");
       locals.remove("web.res");
     }
