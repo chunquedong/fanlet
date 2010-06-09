@@ -38,7 +38,9 @@ public class FanServlet extends HttpServlet
     webmod.typeof().method("onStop").call(webmod);
   }
   
-  private void dispatch(String mthd, HttpServletRequest req, HttpServletResponse res)
+  @Override
+  protected void service(HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException
   {
     final FanObj webres = loadAndCreateType("servlet::ServletRes", res);
     final FanObj webreq = loadAndCreateType("servlet::ServletReq", req, webmod);
@@ -46,49 +48,14 @@ public class FanServlet extends HttpServlet
     Map locals = (Map) Type.find("concurrent::Actor").method("locals").call();
     locals.set("web.res", webres);
     locals.set("web.req", webreq);
-    webmod.typeof().method(mthd).call(webmod);
+    
+    try {
+      webmod.typeof().method("onService").call(webmod);
+    }
+    finally {
+      // cleanup thread locals
+      locals.remove("web.req");
+      locals.remove("web.res");
+    }
   }
-  
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-      dispatch("onGet", req, res);
-  }
-
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-      dispatch("onPost", req, res);
-  }
-
-  @Override
-  protected void doDelete(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-      dispatch("onDelete", req, res);
-  }
-
-  @Override
-  protected void doHead(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-      dispatch("onHead", req, res);
-  }
-
-  @Override
-  protected void doOptions(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-      dispatch("onOptions", req, res);
-  }
-
-  @Override
-  protected void doPut(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-      dispatch("onPut", req, res);
-  }
-
-  @Override
-  protected void doTrace(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-      dispatch("onTrace", req, res);
-  }
-  
 }
