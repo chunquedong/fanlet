@@ -5,13 +5,13 @@ using [java] javax.servlet.http
 using [java] javax.servlet.http::Cookie as JCookie
 using [java] fanx.interop
 
-class ServletRes : WebRes
+internal class ServletRes : WebRes
 {
-  HttpServletResponse res
+  private HttpServletResponse? res
   override readonly Bool isCommitted := false
   internal WebOutStream? webOut
 
-  new make(HttpServletResponse response) {
+  new make(HttpServletResponse? response) {
     res = response
   }
   
@@ -40,7 +40,7 @@ class ServletRes : WebRes
     commit(false)
     res.sendError(statusCode, msg)
   }
-
+  
   override Int statusCode := 200
   {
     set {
@@ -50,9 +50,6 @@ class ServletRes : WebRes
     }
   }
   
-  **
-  ** If the response has already been committed, then throw an Err.
-  **
   internal Void checkUncommitted() {
     if (isCommitted) throw Err("WebRes already committed")
   }
@@ -91,7 +88,7 @@ class ServletRes : WebRes
     get { return (isCommitted ? &headers.ro : &headers) }
   }
   
-  override web::Cookie[] cookies := web::Cookie[,] {
+  override web::Cookie[] cookies := Cookie[,] {
     get { return (isCommitted ? &cookies.ro : &cookies) }
   }
 }

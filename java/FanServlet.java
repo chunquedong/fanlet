@@ -38,57 +38,57 @@ public class FanServlet extends HttpServlet
     webmod.typeof().method("onStop").call(webmod);
   }
   
-  private void dispatch(Method method, HttpServletRequest req, HttpServletResponse res)
+  private void dispatch(String mthd, HttpServletRequest req, HttpServletResponse res)
   {
     final FanObj webres = loadAndCreateType("servlet::ServletRes", res);
-    // final FanObj webreq = loadAndCreateType("servlet::ServletReq", req, webmod);
-    // log.warning("made req: " + req);
+    final FanObj webreq = loadAndCreateType("servlet::ServletReq", req, webmod);
+    
     Map locals = (Map) Type.find("concurrent::Actor").method("locals").call();
-    // locals.set("web.req", webreq);
     locals.set("web.res", webres);
-    method.call(webmod); // first param is the object to call on
+    locals.set("web.req", webreq);
+    webmod.typeof().method(mthd).call(webmod);
   }
   
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-      dispatch(webmod.typeof().method("onGet"), req, res);
+      dispatch("onGet", req, res);
   }
 
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-      dispatch(webmod.typeof().method("onPost"), req, res);
+      dispatch("onPost", req, res);
   }
 
   @Override
   protected void doDelete(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-      dispatch(webmod.typeof().method("onDelete"), req, res);
+      dispatch("onDelete", req, res);
   }
 
   @Override
   protected void doHead(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-      dispatch(webmod.typeof().method("onHead"), req, res);
+      dispatch("onHead", req, res);
   }
 
   @Override
   protected void doOptions(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-      dispatch(webmod.typeof().method("onOptions"), req, res);
+      dispatch("onOptions", req, res);
   }
 
   @Override
   protected void doPut(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-      dispatch(webmod.typeof().method("onPut"), req, res);
+      dispatch("onPut", req, res);
   }
 
   @Override
   protected void doTrace(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
-      dispatch(webmod.typeof().method("onTrace"), req, res);
+      dispatch("onTrace", req, res);
   }
   
 }

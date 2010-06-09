@@ -5,31 +5,35 @@ using [java] javax.servlet
 using [java] javax.servlet.http
 using [java] fanx.interop
 
-class ServletReq : WebReq
+internal class ServletReq : WebReq
 {
-  private HttpServletRequest? servletReq
-  static const Version nullVersion := Version("0")
+  private HttpServletRequest? req
+  private InStream webIn
+  override WebMod mod
   
-  new make(HttpServletRequest? request) {
-    servletReq = request
+  new make(HttpServletRequest? request, WebMod wm) {
+    req = request
+    mod = wm
+    webIn = Interop.toFan(req.getInputStream())
   }
   
-  override InStream in := Interop.toFan(servletReq.getInputStream())
-  override IpAddr remoteAddr := IpAddr(servletReq.getRemoteAddr())
-  override Int remotePort := servletReq.getRemotePort()
-  override Version version := nullVersion
-  override Str method := servletReq.getMethod()
-  override Uri uri := Uri.fromStr(servletReq.getRequestURI())
-  override WebMod mod := ServletDefaultMod()
+  override InStream in() { return webIn }
+  override IpAddr remoteAddr() { return IpAddr(req.getRemoteAddr()) }
+  override Int remotePort() { return req.getRemotePort() }
+  override Version version := Version("0")
+  override Str method() { return req.getMethod() }
+  override Uri uri() { return Uri.fromStr(req.getRequestURI()) }
   ** not sure how to deal with sessions yet...
-  override WebSession session := ServletSession(servletReq.getSession())
+  override once WebSession session() { return ServletSession(req.getSession()) }
   
   override once Str:Str headers() {
     hdrs := Str:Str[:]
-    while (servletReq.getHeaderNames().hasMoreElements()) {
-      name := servletReq.getHeaderNames().nextElement()
-      hdrs[name] = servletReq.getHeader(name)
+    e := req.getHeaderNames()
+    while (e.hasMoreElements()) {
+      name := e.nextElement()
+      hdrs[name] = req.getHeader(name)
     }
-    return hdrs
+    return hdrs.ro
   }
 }
+
