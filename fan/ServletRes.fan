@@ -8,10 +8,11 @@ using [java] fanx.interop
 internal class ServletRes : WebRes
 {
   private HttpServletResponse? res
-  override readonly Bool isCommitted := false
   internal WebOutStream? webOut
+  override readonly Bool isCommitted := false
 
-  new make(HttpServletResponse? response) {
+  new make(HttpServletResponse? response)
+  {
     res = response
   }
   
@@ -43,14 +44,16 @@ internal class ServletRes : WebRes
   
   override Int statusCode := 200
   {
-    set {
+    set
+    {
       checkUncommitted
       &statusCode = it
       // this is applied in commit()
     }
   }
   
-  internal Void checkUncommitted() {
+  internal Void checkUncommitted()
+  {
     if (isCommitted) throw Err("WebRes already committed")
   }
 
@@ -68,14 +71,13 @@ internal class ServletRes : WebRes
     // if we have content then we need to ensure we have our
     // headers and response stream are setup correctly
     if (content)
-      webOut = WebOutStream(Interop.toFan(res.getOutputStream()))
+      webOut = WebOutStream(Interop.toFan(res.getOutputStream))
 
     // write response line and headers
-    res.setStatus(this.statusCode)
-    this.headers.each |Str v, Str k| {
-      res.addHeader(k, v)
-    }
-    this.cookies.each |c| {
+    res.setStatus(statusCode)
+    headers.each |Str v, Str k| { res.addHeader(k, v) }
+    cookies.each |c|
+    {
       jc := JCookie(c.name, c.val)
       if (c.maxAge != null) jc.setMaxAge(c.maxAge.toSec)
       if (c.secure == true) jc.setSecure(true)
@@ -84,11 +86,13 @@ internal class ServletRes : WebRes
     }
   }
   
-  override Str:Str headers := Str:Str[:] {
+  override Str:Str headers := Str:Str[:]
+  {
     get { return (isCommitted ? &headers.ro : &headers) }
   }
   
-  override web::Cookie[] cookies := Cookie[,] {
+  override web::Cookie[] cookies := Cookie[,]
+  {
     get { return (isCommitted ? &cookies.ro : &cookies) }
   }
 }

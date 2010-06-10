@@ -47,10 +47,12 @@ public class FanServlet extends HttpServlet
     locals.set("web.res", webres);
     locals.set("web.req", webreq);
     
-    try {
+    try
+    {
       webmod.typeof().method("onService").call(webmod);
     }
-    finally {
+    finally
+    {
       // save the session, and cleanup thread locals
       FanObj session = (FanObj) webreq.typeof().method("session").call(webreq);
       session.typeof().method("save").call(session);
