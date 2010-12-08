@@ -15,10 +15,10 @@ internal class ServletRes : WebRes
   {
     res = response
   }
-  
+
   override readonly Bool isDone := false
   override Void done() { isDone = true }
-  
+
   override WebOutStream out()
   {
     // if we are grabbing a stream to write response content, then
@@ -28,20 +28,20 @@ internal class ServletRes : WebRes
     if (webOut == null) throw Err("Must set Content-Length or Content-Type to write content")
     return webOut
   }
-  
+
   override Void redirect(Uri uri, Int statusCode := 303)
   {
     this.statusCode = statusCode
     commit(false)
     res.sendRedirect(uri.toStr)
   }
-  
+
   override Void sendErr(Int statusCode, Str? msg := null)
   {
     commit(false)
     res.sendError(statusCode, msg)
   }
-  
+
   override Int statusCode := 200
   {
     set
@@ -51,7 +51,7 @@ internal class ServletRes : WebRes
       // this is applied in commit()
     }
   }
-  
+
   internal Void checkUncommitted()
   {
     if (isCommitted) throw Err("WebRes already committed")
@@ -85,15 +85,22 @@ internal class ServletRes : WebRes
       res.addCookie(jc)
     }
   }
-  
+
   override Str:Str headers := Str:Str[:]
   {
     get { return (isCommitted ? &headers.ro : &headers) }
   }
-  
+
   override web::Cookie[] cookies := Cookie[,]
   {
     get { return (isCommitted ? &cookies.ro : &cookies) }
+  }
+
+  ** I add this method
+  internal Void close()
+  {
+    commit(false)
+    if (webOut != null) webOut.close
   }
 }
 

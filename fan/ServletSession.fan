@@ -6,8 +6,8 @@ class ServletSession : WebSession
 {
   private HttpSession? session
   private Bool isValid := true
-  
-  new make(HttpSession? hs) : super(hs.getId)
+
+  new make(HttpSession? hs)
   {
     session = hs
     e := session.getAttributeNames
@@ -17,13 +17,17 @@ class ServletSession : WebSession
       this.map[name] = session.getAttribute(name)
     }
   }
-  
+
+  override const Str id
+
   override Void delete()
   {
     session.invalidate()
     isValid = false
   }
-  
+
+  override Str:Obj? map := Str:Obj[:]
+
   internal Void save()
   {
     if (isValid)
