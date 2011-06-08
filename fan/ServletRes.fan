@@ -9,14 +9,14 @@ internal class ServletRes : WebRes
 {
   private HttpServletResponse? res
   internal WebOutStream? webOut
-  override readonly Bool isCommitted := false
+  override Bool isCommitted := false { private set }
 
   new make(HttpServletResponse? response)
   {
     res = response
   }
 
-  override readonly Bool isDone := false
+  override Bool isDone := false { private set }
   override Void done() { isDone = true }
 
   override WebOutStream out()

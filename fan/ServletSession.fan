@@ -9,6 +9,7 @@ class ServletSession : WebSession
 
   new make(HttpSession? hs)
   {
+    id = session.getId
     session = hs
     e := session.getAttributeNames
     while (e.hasMoreElements)
