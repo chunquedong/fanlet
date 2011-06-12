@@ -34,10 +34,10 @@ public class FanServlet extends HttpServlet
 
     String n = getInitParameter("fan.servlet.webmod");
     if (n == null)
-      throw ArgErr.make("FanServlet requires an init param specifying 'fan.servlet.webmod'").val;
+      throw ArgErr.make("FanServlet requires an init param specifying 'fan.servlet.webmod'");
     webmod = loadAndCreateType(n);
     if (!webmod.typeof().fits(Type.find("web::WebMod")))
-      throw ArgErr.make(webmod.typeof().qname() + " does not fit webmod").val;
+      throw ArgErr.make(webmod.typeof().qname() + " does not fit webmod");
     webmod.typeof().method("onStart").call(webmod);
   }
 
