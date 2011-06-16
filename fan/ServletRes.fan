@@ -82,6 +82,7 @@ internal class ServletRes : WebRes
       if (c.maxAge != null) jc.setMaxAge(c.maxAge.toSec)
       if (c.secure == true) jc.setSecure(true)
       if (c.domain != null) jc.setDomain(c.domain)
+      jc.setPath(c.path)
       res.addCookie(jc)
     }
   }
